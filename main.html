@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="google" content="notranslate">
+
+	<link href='https://fonts.googleapis.com/css?family=Cutive Mono' rel='stylesheet'>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Monofett&family=Noto+Sans+KR:wght@300;500;900&family=PT+Serif&family=Tangerine:wght@700&display=swap" rel="stylesheet">
+
+
+	<link rel="icon" href="img/favicon-16x16.png">
+	<title>New Year's Web-Print</title>
+	<style type="text/css">
+		@font-face {
+		    font-family: 'PPEditorialNew';
+		    src:url('./fonts/PPEditorialNew-Regular.otf') format('woff');
+		}
+
+		html{
+			font-family: 'Cutive Mono', monospace; font-weight: 700;
+		}
+
+		body{
+			position: relative; 
+			width: 210mm;
+			height: 297mm;
+
+			margin: 0; padding: 0; 
+			background: #f0f0f0; 
+			-ms-overflow-style: none;
+		}
+		::-webkit-scrollbar {
+			display: none;
+		}
+
+		button{background: white; font-family: 'Cutive Mono', monospace; font-weight: 700;}
+		button:hover{background: #8a8a8a; color: #dcdcdc}
+		.noSelect {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+
+/*알림창*/
+	.alerts{
+		background: red; color: white; 
+		padding: 1mm;
+	}
+
+	#alertsContainer, .alerts{
+		pointer-events: none;
+	}
+
+/*캘린더*/
+	#year{position: absolute; top: 1; width: 100%; text-align: center;}
+	#calendar{width: 100%; height: 100%; display: flex;
+		flex-wrap: wrap; justify-content: space-evenly; align-content: flex-end; gap: 5mm;
+	}
+	.month{width:35mm; flex-direction: column; display: flex; gap: 0; flex-wrap: wrap; flex-grow: 0;}
+	.monthContent{display: flex; gap: 1pt 0pt; flex-wrap: wrap;}
+	.date{width: calc(14.286%) ; flex-grow: 0; flex-shrink: 0;
+		background: white; color: rgba(0, 0, 0, 1.0);
+	}
+	.sunday{color: red}
+	.saturday{color: blue;}
+	.dateBefore{ visibility: hidden; width: calc(14.286%); flex-grow: 0; flex-shrink: 0;}
+
+
+	h1{font-size: 20pt; text-align: center; height: 5mm; margin: 0} /*몇년*/
+	h2{margin: 0; font-size: 12pt; text-align: center; margin-bottom: 2pt} /*몇월*/
+	h3{margin: 0; font-size: 10pt; text-align: center; letter-spacing: -0.05rem} /*몇일*/
+	p{margin: 0;}
+
+/*페이지*/
+	.page{
+		display: inline-block;
+	}
+	#print{
+		width: 148mm; height: 210mm; 
+		background: white;
+		position: relative;
+
+		box-sizing: border-box; 
+		border: 5mm solid rgba(255, 255, 255, 0); 
+	}
+
+	/*재단선*/
+		.bleedWrapper{display: flex; margin: 0; gap:0mm;}
+		.bleeds{
+			display: flex;
+			visibility: visible;
+		}
+		.bleedCorner{
+			width: 5mm; 
+			height: 5mm; 
+			margin: 1mm;
+			border: none;
+		}
+		.bleedCenter{
+			height: 5mm;
+			margin: 1mm 0;
+			padding: 0 1mm;
+			border-left: solid black 0.25mm; 
+			border-right: solid black 0.25mm; 
+			flex-direction: row;
+			justify-content: space-between;
+		}
+		.bleedMid{
+			width: 5mm;
+			padding: 1mm 0;
+			margin: 0 1mm;
+			border-top: solid black 0.25mm; 
+			border-bottom: solid black 0.25mm; 
+			flex-direction: column;
+			justify-content: space-between;
+		}
+		.bleedT{height: 5mm; border-bottom: solid black 0.25mm;}
+		.bleedB{height: 5mm; border-top: solid black 0.25mm;}
+		.bleedL{width: 5mm; margin-right: auto; border-right: solid black 0.25mm;}
+		.bleedR{width: 5mm; margin-left: auto; border-left: solid black 0.25mm;}
+
+	/*맞춰찍기 표시*/
+		.registration-mark {
+			position: relative;
+			width: 5mm; height: 5mm;
+		}
+
+		.registration-mark .circle {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 3mm;
+			height: 3mm;
+			border: 0.25mm solid black;
+			border-radius: 50%;
+		}
+
+		.registration-mark .line-horizontal {
+			position: absolute;
+			background: black;
+			width: 5mm;
+			height: 0.25mm;
+			top: calc(50% - 0.125mm);
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+		.registration-mark .line-vertical {
+			position: absolute;
+			background: black;
+			width: 0.25mm;
+			height: 5mm;
+			top: 50%;
+			left: calc(50% - 0.125mm);
+			transform: translateY(-50%);
+		}
+
+/*헤더(컨트롤)*/
+		header{position: fixed; height: 100%; display: flex; flex-direction: row; margin: 5mm; top: 0; right: 0; gap: 5mm; z-index: 800;}
+		#introduce{
+			font-family: 'Pretendard-Regular';
+			src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+			font-weight: 600;
+			font-style: normal;
+			font-size: 9pt;
+			color: rgba(0, 0, 0, 0);
+			display: none;
+		}
+		#controller{width: 60mm; display: flex; flex-direction: column; gap: 2mm;}
+		.controllerWrapperWrapperP{margin: 0 auto;}
+		.controllerWrapper{display: flex; flex-direction: column; gap: 2mm;}
+		.controllerWrapperWrapper{display: flex; flex-direction: column; gap: 5mm; border: 0.25mm solid black; padding: 5mm; background: rgb(225,225,225);}
+		.alertsContainer{position: absolute; top: 0; right: 0}
+	/*input Range 커스텀*/
+		input[type=text] {
+			background: transparent;
+			border: none;
+			margin: 0;
+			padding: 0;
+			outline: none;
+			font-family: 'Cutive Mono', monospace; font-weight: 700;
+			font-size: 12pt;
+		}
+
+	/*input Range 커스텀*/
+		input[type=range] {
+			height: 1mm;
+			-webkit-appearance: none;
+			width: 100%;
+			background: black;
+		}
+
+		input[type=range]::-webkit-slider-thumb {
+			height: 1rem;
+			width: 1rem;
+			border-radius: 50%;
+			background: #000000;
+			-webkit-appearance: none;
+		}
+	.underlined {
+		text-decoration: currentColor solid underline;
+		text-underline-offset: 0.5mm;
+		cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>✏</text></svg>") 24 18, auto;
+	}
+	.underlined:hover {color: blue;}
+
+
+
+	/*양방향 슬라이더*/
+		#monthFloat{display: block;}
+		#twoWaySlider{display: block;}
+
+		.twoWaySlider {
+		  width: 100%; height: 100%;
+		  display: flex;
+		  flex-direction: column;
+		  justify-content: flex-start;
+		  align-items: center;
+		  position: relative;
+		}
+
+		.btnSelectMonths {
+		    width: 100%; height: 0;
+			top: 0; left: 0;
+			position: absolute;
+			border: none;
+			pointer-events: none;
+			z-index: 20;
+			}
+		input::-webkit-slider-thumb {
+			pointer-events: all;
+			width: 2.5rem;
+			height: 2.5rem;
+		}
+
+		.twoWaySlider_track {
+		  position: relative;
+		  width: 90%; height: 0.5rem; left: 7%; 
+		}
+
+		.twoWaySlider_track_range {
+		  position: absolute;
+		  height: 1mm;
+		  top: 50%; bottom: 0; left: 0%; right: 0;
+		  background-color: black;
+		}
+
+/*인쇄*/
+		@media print {
+			header, footer{
+				display:none
+			};
+			body{
+				margin: 0; padding: 0;
+			}
+			#sizeGuideContainer{
+				display: none;
+			}
+		}
+
+		@page {
+			size: A4 portrait;
+			margin: 0; padding: 0;
+		}
+
+
+/*인쇄규격가이드*/
+		#sizeGuideContainer{position: absolute; left: -5mm; top: -5mm; background: whitesmoke;}
+		#guideBox, #guideName {position: absolute;}
+		.guideBoxContents{box-sizing: border-box; position: absolute;}
+		.guideNameContents{font-size: 9pt; text-align: left; padding: 0.7mm 1mm 0.7mm 1mm; position: absolute; background: white; border-left: 0.25mm solid black; border-top: 0.25mm solid black;}
+
+/*푸터*/
+		footer{
+			width: 60mm; font-size: 8pt; position: fixed; margin: 5mm; right: 0; bottom: 0; text-align: center;
+		}
+
+/*페이지전환 시 페이드인아웃*/
+	#fadePage{
+		background: white;
+		position: fixed; top: -5vh; left: -5vw;
+		width: 110vw; height: 110vh;
+		overflow: hidden;
+
+		z-index: 999;
+		pointer-events : none;
+		touch-action: none; }
+
+	
+	.fadeToWhite{
+		animation-name: toWhite;
+		animation-duration: 1.6s;
+		animation-timing-function: ease-in;
+		animation-fill-mode: forwards;
+	}
+
+	@keyframes toWhite{
+		0% {opacity: 0;}
+		100% {opacity: 1;}
+	}
+
+	.fadeFromWhite{
+		animation-name: fromWhite;
+		animation-duration: 1.6s;
+		animation-delay: 0.3s;
+		animation-timing-function: ease-out;
+		animation-fill-mode: forwards;
+	}
+
+	@keyframes fromWhite{
+		0% {opacity: 1;}
+		100% {opacity: 0;}
+	}
+
+
+	
+	</style>
+
+</head>
+<body>
+	<div id="fadePage" class="fadeFromWhite"></div>
+
+	<header>
+		<div id="alertsContainer"></div>
+		<div id="controller">
+			<div class="controllerWrapperWrapper">
+				<p class="controllerWrapperWrapperP">- Print -</p>
+				<div class="controllerWrapper">
+					<button id="runPrint" onclick="return printPage();" style="padding: 8mm; border-radius: 50%;">Print</button>
+				</div>
+				<div class="controllerWrapper">
+					<button id="PrintPrinterMark">
+						Print Printer-Mark 
+					</button>
+				</div>
+			</div>
+			<div class="controllerWrapperWrapper">
+				<p class="controllerWrapperWrapperP">- Page -</p>
+				<div class="controllerWrapper">
+					<p id="pageWidthFloat">Width<br><input type="text" id="printScaleWType" class="underlined"> mm</p>
+					<input type="range" id="printScaleW" min="45" max="210" value="148">
+				</div>
+				<div class="controllerWrapper">
+					<p id="pageheightFloat">height<br><input type="text" id="printScaleHType" class="underlined"> mm</p>
+					<input type="range" id="printScaleH" min="50" max="297" value="210">
+				</div>
+			</div>
+			<div class="controllerWrapperWrapper">
+				<p class="controllerWrapperWrapperP">- Calendar -</p>
+				<div class="controllerWrapper">
+					<button id="insertCalendar">
+						Calendar
+					</button>
+				</div>
+				<div class="controllerWrapper" style="padding-bottom: 2mm;">
+					<p id="monthFloat">Month<br>1(Jan) ~ 12(Dec)</p>
+					<div class="twoWaySlider" id="twoWaySlider">
+						<input type="range" class="btnSelectMonths" id="twoWayinput-left" min="1" max="12" value="1" style="background: transparent;" />
+						<input type="range" class="btnSelectMonths" id="twoWayinput-right" min="1" max="12" value="12" style="background: transparent;" />
+						<div class="twoWaySlider_track">
+							<div class="twoWaySlider_track_range"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="controllerWrapperWrapper">
+				<p class="controllerWrapperWrapperP">- Custom -</p>
+				<div class="controllerWrapper">
+					<button id="colorWeekends">
+						Weekend
+					</button>
+				</div>
+				<div class="controllerWrapper">
+					<button id="viewGuide" onclick="return viewGuide();">Size Guides</button>
+				</div>
+				<div class="controllerWrapper">
+					<button id="fontChange" onclick="return fontChange();">Change Fonts</button>
+				</div>
+				<div class="controllerWrapper">
+					<button id="colorChange" onclick="return colorChange();">Change colors</button>
+				</div>
+			</div>
+		</div>
+	</header>
+	
+	<div class="page">
+		<div class="bleedWrapper ">
+			<div class="bleedCorner bleeds"></div>
+			<div class="bleedCenter bleeds">
+				<div class="registration-mark">
+				  <div class="circle"></div>
+				  <div class="line-horizontal"></div>
+				  <div class="line-vertical"></div>
+				</div>
+				<div class="registration-mark">
+				  <div class="circle"></div>
+				  <div class="line-horizontal"></div>
+				  <div class="line-vertical"></div>
+				</div>
+			</div>
+			<div class="bleedCorner bleeds"></div>
+		</div>
+		<div class="bleedWrapper">
+			<div class="bleedMid bleeds">
+				<div class="registration-mark">
+				  <div class="circle"></div>
+				  <div class="line-horizontal"></div>
+				  <div class="line-vertical"></div>
+				</div>
+				<div class="registration-mark">
+				  <div class="circle"></div>
+				  <div class="line-horizontal"></div>
+				  <div class="line-vertical"></div>
+				</div>
+			</div>
+			<div class="print" id="print">
+				<div id="sizeGuideContainer">
+					<div id="guideBox"style="z-index: 10;"></div>
+					<div id="guideName" style="z-index: 999;"></div>
+				</div>
+		        <h1 id="year"></h1>
+		        <div id="calendar">
+		        </div>
+			</div>
+			<div class="bleedMid bleeds">
+				<div class="registration-mark">
+				  <div class="circle"></div>
+				  <div class="line-horizontal"></div>
+				  <div class="line-vertical"></div>
+				</div>
+				<div class="registration-mark">
+				  <div class="circle"></div>
+				  <div class="line-horizontal"></div>
+				  <div class="line-vertical"></div>
+				</div>
+			</div>
+		</div>
+		<div class="bleedWrapper">
+			<div class="bleedCorner bleeds"></div>
+			<div class="bleedCenter bleeds">
+				<div class="registration-mark">
+				  <div class="circle"></div>
+				  <div class="line-horizontal"></div>
+				  <div class="line-vertical"></div>
+				</div>
+				<div class="registration-mark">
+				  <div class="circle"></div>
+				  <div class="line-horizontal"></div>
+				  <div class="line-vertical"></div>
+				</div>
+			</div>
+			<div class="bleedCorner bleeds"></div>
+		</div>
+	</div>
+	<footer>
+		Sangmin Jo / 2023. 12.<br><br>
+		Web-Interaction Design,<br>
+		In-class work<br><br>
+		Seoul national university<br>
+		of Science and Technology
+	</footer>
+<script type="text/javascript">
+	
+// 컨트롤러 --------------------------------------------------------------------------
+	// 버튼클릭시 캘린더 생성
+		const calendar = document.getElementById("calendar");
+		const calendarBtn = document.getElementById("insertCalendar");
+		const monthFloat = document.getElementById("monthFloat")
+		const twoWaySlider = document.getElementById("twoWaySlider")
+
+		calendar.style.display = "flex"
+		calendarBtn.style.backgroundColor = "black";
+		calendarBtn.style.color = "#dcdcdc";
+
+		calendarBtn.onclick = function() {
+			if (calendar.style.display === "flex") {
+				calendar.style.display = "none";
+				monthFloat.style.display = "none";
+				twoWaySlider.style.display = "none";
+				calendarBtn.style.backgroundColor = "";
+				calendarBtn.style.color = "";
+			} else {
+				calendar.style.display = "flex";
+				monthFloat.style.display = "block";
+				twoWaySlider.style.display = "block";
+				calendarBtn.style.backgroundColor = "black";
+				calendarBtn.style.color = "#dcdcdc";
+			}
+		};
+
+	// 캘린더 구간표시 월
+		const inputLeft = document.getElementById("twoWayinput-left");
+		const inputRight = document.getElementById("twoWayinput-right");
+
+		inputLeft.addEventListener("input", handleInputChange);
+		inputRight.addEventListener("input", handleInputChange);
+
+		function handleInputChange() {
+		    convertToMonthFloat(inputLeft.value, inputRight.value);
+		    monthFloatInput(inputLeft.value, inputRight.value);
+		    hideOverflowedDivs();
+		}
+
+		function convertToMonthFloat(monthStart, monthEnd) {
+		    const monthArray = [
+		        "month-1", "month-2", "month-3", "month-4",
+		        "month-5", "month-6", "month-7", "month-8",
+		        "month-9", "month-10", "month-11", "month-12"
+		    ];
+
+		    for (let i = 1; i < 13; i++) {
+		        const monthElement = document.getElementById(monthArray[(i-1)]);
+				if (i < monthStart || i > monthEnd) {
+					monthElement.style.display = "none";
+	            	monthElement.classList.add('excludeClass');
+			    } else if (i >= monthStart && i <= monthEnd) {
+					monthElement.style.display = "block";
+					monthElement.classList.remove('excludeClass');
+				};
+		    }
+		}
+
+		// 보이는 월 플로팅
+		function monthFloatInput(monthStart, monthEnd){
+			const months = [
+				'Jan',
+				'Feb',
+				'Mar',
+				'Apr',
+				'May',
+				'Jun',
+				'Jul',
+				'Aug',
+				'Sep',
+				'Oct',
+				'Nov',
+				'Dec',
+			];
+
+			monthFloat.innerHTML = "Month<br>" + monthStart + "(" + months[monthStart-1] + ") ~ " + monthEnd + "(" + months[monthEnd-1] + ")"
+
+		}
+
+
+
+		// 양방향 슬라이더
+			const range = document.querySelector(".twoWaySlider_track_range");
+
+			const setLeftValue = e => {
+				const _this = e.target;
+				const { value, min, max } = _this;
+
+				if (+inputRight.value - +value < 1) {
+					_this.value = +inputRight.value - 1;
+			}
+
+			const percent = ((+_this.value - +min) / (+max - +min)) * 100;
+				range.style.left = `${percent}%`;
+			};
+
+			const setRightValue = e => {
+				const _this = e.target;
+				const { value, min, max } = _this;
+
+				if (+value - +inputLeft.value < 1) {
+					_this.value = +inputLeft.value + 1;
+			}
+
+			const percent = ((+_this.value - +min) / (+max - +min)) * 100;
+				range.style.right = `${100 - percent}%`;
+			};
+
+			if (inputLeft && inputRight) {
+				inputLeft.addEventListener("input", setLeftValue);
+				inputRight.addEventListener("input", setRightValue);
+			};
+
+	// 가이드 보기 버튼
+		const sizeGuideContainer = document.getElementById('sizeGuideContainer')
+		const guideBtn = document.getElementById("viewGuide")
+		
+		sizeGuideContainer.style.visibility = "hidden"
+		sizeGuideContainer.style.pointerEvents = "none"
+
+		guideBtn.onclick = function() {
+			if (sizeGuideContainer.style.visibility === "hidden") {
+				sizeGuideContainer.style.visibility = "visible";
+				sizeGuideContainer.style.pointerEvents = "auto";
+				guideBtn.style.backgroundColor = "black";
+				guideBtn.style.color = "#dcdcdc";
+			} else {
+				sizeGuideContainer.style.visibility = "hidden";
+				sizeGuideContainer.style.pointerEvents = "none";
+				guideBtn.style.backgroundColor = "";
+				guideBtn.style.color = "";
+			}
+		};
+
+	// 폰트 변경 버튼
+
+		const fonts = [
+			'Cutive Mono', 
+			'PPEditorialNew', 
+			'Comic Sans MS', 
+			'Impact', 
+			'Webdings', 
+			'Monofett', 
+			'helvetica', 
+			'Bookman Old Style'];
+
+		let selectedFont = 0;
+
+		const fontChangeBtn = document.getElementById('fontChange')
+		fontChangeBtn.innerHTML = "Change Fonts (" + 1 + "/" + fonts.length + ")";
+
+	function fontChange() {
+		selectedFont++;
+
+		if (selectedFont >= fonts.length) {
+			selectedFont = 0;
+		}
+
+		fontChangeBtn.innerHTML = "Change Fonts (" + (selectedFont+1) + "/" + fonts.length + ")";
+
+		const randomFont = fonts[selectedFont];
+		document.body.style.fontFamily = randomFont;
+
+		let allBtn = document.querySelectorAll('button');
+			allBtn.forEach(function (element) {
+			element.style.fontFamily = randomFont;
+		});
+
+		let allInput = document.querySelectorAll('input');
+			allInput.forEach(function (element) {
+				element.style.fontFamily = randomFont;
+			});
+		}
+
+
+	// 색상 변경 버튼
+		function colorChange() {
+		    const colors = [
+		        'OrangeRed',
+		        'red',
+		        'Blue',
+		        'DeepPink',
+		        'LightGrey',
+		        'DarkGray',
+		        'OrangeRed',
+		        'Magenta',
+		        'SeaGreen',
+		        'DodgerBlue',
+		        'Orange',
+		        'Red',
+		        'Teal',
+		        'Tan'
+		    ];
+
+		    const randomValue = Math.floor(Math.random() * colors.length);
+		    const sundayElements = document.querySelectorAll(".sunday");
+		    const saturdayElements = document.querySelectorAll(".saturday");
+
+		    sundayElements.forEach(element => {
+		        element.style.color = colors[randomValue];
+		    });
+
+		    saturdayElements.forEach(element => {
+		        element.style.color = colors[randomValue + 1];
+		    });
+		}
+
+
+// page 규격 조절 ----------------------------------------------------------------
+		const print = document.getElementById("print");
+
+	// 컨트롤러 연결
+		document.addEventListener('DOMContentLoaded', function () {
+			document.getElementById('printScaleHType').value = document.getElementById('printScaleH').value;
+			document.getElementById('printScaleWType').value = document.getElementById('printScaleW').value;
+			resizeInput('printScaleWType');
+			resizeInput('printScaleHType');
+			hideOverflowedDivs();
+			setPrintW();
+			setPrintH();
+		});
+
+		document.getElementById('printScaleHType').addEventListener('input', function () {
+			document.getElementById('printScaleH').value = parseInt(this.value);
+			print.style.height = parseInt(this.value) + "mm";
+			resizeInput('printScaleHType');
+			hideOverflowedDivs();
+			setPrintH();
+		});
+		document.getElementById('printScaleH').addEventListener('input', function () {
+			document.getElementById('printScaleHType').value = document.getElementById('printScaleH').value;
+			print.style.height = parseInt(this.value) + "mm";
+			resizeInput('printScaleHType');
+			hideOverflowedDivs();
+			setPrintH();
+		});
+
+		document.getElementById('printScaleWType').addEventListener('input', function () {
+			document.getElementById('printScaleW').value = parseInt(this.value);
+			print.style.width = parseInt(this.value) + "mm";
+			resizeInput('printScaleWType');
+			hideOverflowedDivs();
+			setPrintW();
+		});
+		document.getElementById('printScaleW').addEventListener('input', function () {
+			document.getElementById('printScaleWType').value = document.getElementById('printScaleW').value;
+			print.style.width = parseInt(this.value) + "mm";
+			resizeInput('printScaleWType');
+			hideOverflowedDivs();
+			setPrintW();
+		});
+
+		function setPrintW(){
+			var print = document.getElementById('print');
+			var bleedC = document.querySelectorAll(".bleedCenter");
+			print.style.width = printScaleW.value + "mm";
+			bleedC.forEach(function(bleedElement) {
+			  bleedElement.style.width = ( printScaleW.value - 2 ) + "mm";
+			});
+		}
+		function setPrintH(){
+			var print = document.getElementById('print');
+			var bleedM = document.querySelectorAll(".bleedMid");
+			print.style.height = printScaleH.value;
+			bleedM.forEach(function(bleedElement) {
+			  bleedElement.style.height = ( printScaleH.value - 2 ) + "mm";
+			});
+		}
+
+		function resizeInput(inputId) {
+		  var input = document.getElementById(inputId);
+		  var text = input.value;
+
+		  // 임시적으로 span 요소를 생성하여 텍스트의 너비를 측정
+		  var tempSpan = document.createElement('span');
+		  tempSpan.textContent = text;
+		  tempSpan.style.visibility = 'hidden';
+		  document.body.appendChild(tempSpan);
+
+		  // 텍스트의 너비를 가져와서 입력 상자의 너비로 설정
+		  input.style.width = tempSpan.offsetWidth + 'px';
+
+		  // 임시로 추가한 span 요소 제거
+		  document.body.removeChild(tempSpan);
+		};
+
+// 오버플로우 개체 숨기기
+		function hideOverflowedDivs() {
+		    const calendar = document.getElementById("calendar");
+		    const innerDivs = document.querySelectorAll('.month');
+
+		    innerDivs.forEach(div => {
+				const isExcluded = div.classList.contains('excludeClass');
+		        const bottomPosition = parseInt(calendar.offsetHeight - div.offsetTop);
+		        if (bottomPosition > parseInt(calendar.offsetHeight) && !isExcluded) {
+		            div.style.visibility = 'hidden';
+					makeAlert(div);
+		        } else {
+		            div.style.visibility = 'visible';
+		        }
+		    });
+		}
+
+// 경고
+		function makeAlert(monthdiv) {
+			const divId = monthdiv.id;
+			if (divId) {
+			    const newDiv = document.createElement('div');
+			    const alertsContainer = document.getElementById("alertsContainer");
+
+			    newDiv.id = "alert-" + divId + "-overflowed";
+			    newDiv.innerHTML = divId + ' overflowed and has been hidden.';
+			    newDiv.classList.add('alerts');
+
+				const previousAlert = document.getElementById("alert-" + divId + "-overflowed");
+				if (previousAlert) {
+					alertsContainer.removeChild(previousAlert);
+				}
+
+				const duplicateAlerts = document.querySelectorAll("#alert-" + divId + "-overflowed");
+      				duplicateAlerts.forEach(alert => {
+            		alertsContainer.removeChild(alert);
+        		});
+
+			    alertsContainer.appendChild(newDiv);
+			    setTimeout(function(){fadeOutAndRemove(newDiv);}, 1000);
+
+			    // 정렬
+			    const childElements = Array.from(alertsContainer.children);
+			    childElements.sort((a, b) => {
+			        const textA = a.textContent || a.innerText;
+			        const textB = b.textContent || b.innerText;
+			        return textA.localeCompare(textB, undefined, { numeric: true, sensitivity: 'base' });
+			    });
+			    childElements.forEach(element => {
+			        alertsContainer.appendChild(element);
+			    });
+			}
+
+		}
+
+		function fadeOutAndRemove(element) {
+			let opacity = 1;
+			const timer = setInterval(function () {
+				if (element) {
+					element.style.opacity = opacity;
+					opacity -= 0.01;
+
+					if (opacity <= 0) {
+						clearInterval(timer);
+						element.style.display = 'none';
+						if (element.parentNode) {
+							element.parentNode.removeChild(element);
+						}
+					}
+				} else {
+					clearInterval(timer);
+				}
+			}, 20);
+		}
+	
+// 규격가이드 -----------------------------------------------
+	// 가이드 생성
+		const sizeGuideArray = [
+		  {"sizeName":"A4","sizeDirection":"horizontal","sizeWidth":297,"sizeHeight":210},
+		  {"sizeName":"A4","sizeDirection":"vertical","sizeWidth":210,"sizeHeight":297},
+		  {"sizeName":"A5","sizeDirection":"horizontal","sizeWidth":210,"sizeHeight":148},
+		  {"sizeName":"A5","sizeDirection":"vertical","sizeWidth":148,"sizeHeight":210},
+		  {"sizeName":"A6","sizeDirection":"horizontal","sizeWidth":148,"sizeHeight":105},
+		  {"sizeName":"A6","sizeDirection":"vertical","sizeWidth":105,"sizeHeight":148},
+		  {"sizeName":"A7","sizeDirection":"horizontal","sizeWidth":105,"sizeHeight":74},
+		  {"sizeName":"A7","sizeDirection":"vertical","sizeWidth":74,"sizeHeight":105},
+		  {"sizeName":"A8","sizeDirection":"horizontal","sizeWidth":74,"sizeHeight":52},
+		  {"sizeName":"A8","sizeDirection":"vertical","sizeWidth":52,"sizeHeight":74},
+		  {"sizeName":"buisinessCard","sizeDirection":"horizontal","sizeWidth":90,"sizeHeight":50},
+		  {"sizeName":"buisinessCard","sizeDirection":"vertical","sizeWidth":50,"sizeHeight":90},
+		  {"sizeName":"postCard","sizeDirection":"horizontal","sizeWidth":150,"sizeHeight":100},
+		  {"sizeName":"postCard","sizeDirection":"vertical","sizeWidth":100,"sizeHeight":150},
+		  {"sizeName":"CDJacket","sizeDirection":"","sizeWidth":120,"sizeHeight":120}
+		];
+
+		for (let i = 0; i < sizeGuideArray.length; i++) {
+		  const newDiv = document.createElement('div');
+		  const guideBox = document.getElementById('guideBox');
+		  guideBox.appendChild(newDiv);
+		  newDiv.id = "Box-guide-" + i;
+		  newDiv.classList.add('guideBoxContents');
+		  newDiv.style.width = sizeGuideArray[i].sizeWidth + "mm";
+		  newDiv.style.height = sizeGuideArray[i].sizeHeight + "mm";
+
+		  const newP = document.createElement('p');
+		  const guideName = document.getElementById('guideName');
+		  guideName.appendChild(newP);
+		  newP.id = "guide-" + i;
+		  newP.classList.add('guideNameContents');
+		  newP.innerHTML = sizeGuideArray[i].sizeName +'<br>'+ sizeGuideArray[i].sizeDirection;
+		  newP.style.left = sizeGuideArray[i].sizeWidth - 0.25 + "mm";
+		  newP.style.top = sizeGuideArray[i].sizeHeight - 0.25 + "mm";
+		}
+
+	// 가이드 마우스호버 시 색상변경
+		const guideNameElements = document.querySelectorAll('.guideNameContents');
+
+		guideNameElements.forEach(function (element) {
+		    element.addEventListener('mouseover', setGuideBoxVisible);
+		    element.addEventListener('mouseout', setGuideBoxInvisible);
+		    element.addEventListener('click', function () {
+		        const elementNum = parseInt(element.id.split('-')[1]);
+		        resizeByGuide(elementNum);
+		    });
+		});
+
+		function setGuideBoxVisible(event) {
+	        const guideBoxId = 'Box-' + event.target.id;
+	        const guideBoxElement = document.getElementById(guideBoxId);
+
+            event.target.style.backgroundColor = 'black';
+            event.target.style.zIndex = '10';
+            event.target.style.color = '#dcdcdc';
+            guideBoxElement.style.border = '0.25mm solid black';
+            guideBoxElement.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+		}
+
+		function setGuideBoxInvisible(event) {
+	        const guideBoxId = 'Box-' + event.target.id;
+	        const guideBoxElement = document.getElementById(guideBoxId);
+
+            event.target.style.backgroundColor = '';
+            event.target.style.zIndex = '';
+            event.target.style.color = '';
+            guideBoxElement.style.border = '';
+            guideBoxElement.style.backgroundColor = '';
+	   		}
+
+	// 가이드 클릭 시 사이즈 변경
+		guideNameElements.forEach(function (element) {
+		    element.onclick = function () {
+		        const elementNum = parseInt(element.id);
+		        resizeByGuide(elementNum);
+		    };
+		});
+
+		function resizeByGuide(elementNum) {
+		    const height = sizeGuideArray[elementNum].sizeHeight;
+		    const width = sizeGuideArray[elementNum].sizeWidth;
+
+		    document.getElementById('printScaleH').value = height;
+		    document.getElementById('printScaleW').value = width;
+
+		    document.getElementById('printScaleHType').value = height;
+		    document.getElementById('printScaleWType').value = width;
+
+		    print.style.height = parseInt(height) + "mm";
+		    print.style.width = parseInt(width) + "mm";
+
+		    resizeInput('printScaleHType');
+		    resizeInput('printScaleWType');
+
+		    setPrintH();
+		    setPrintW();
+
+		    hideOverflowedDivs();
+		}
+
+
+// 인쇄버튼
+		function printPage() {
+			window.print();
+		}
+
+// PrintPrinterMark
+		const PrintPrinterMarkBtn = document.getElementById("PrintPrinterMark");
+		const bleeds = document.querySelectorAll(".bleeds");
+
+			PrintPrinterMarkBtn.style.backgroundColor = "black";
+			PrintPrinterMarkBtn.style.color = "#dcdcdc";
+
+		PrintPrinterMarkBtn.onclick = function (){
+			if (PrintPrinterMarkBtn.style.backgroundColor === "black"){
+				bleeds.forEach(function (bleed){
+					bleed.style.display = 'none';
+					bleed.classList.remove('no-print');
+				});
+				PrintPrinterMarkBtn.style.backgroundColor = "";
+				PrintPrinterMarkBtn.style.color = "";
+			} else {
+				bleeds.forEach(function (bleed){
+					bleed.style.display = 'flex';
+					bleed.classList.remove('no-print');
+				});
+				PrintPrinterMarkBtn.style.backgroundColor = "black";
+				PrintPrinterMarkBtn.style.color = "#dcdcdc";
+			}
+		}
+
+
+
+
+
+// 달력 ----------------------------------------------------------------------------
+
+	// 연도입력
+		let yearOfCalendarPrompt = prompt("Hello, this is the New Year's web printing office. \nEnter the year of the calendar. \n(e.g., 2024)\n");
+		let yearOfCalendar = Number(yearOfCalendarPrompt);
+		let check = /^[0-9]+$/;
+			if (!check.test(yearOfCalendar)) {
+				alert("숫자만 입력 가능합니다.");
+			}
+
+		const year = document.getElementById("year");
+		year.innerHTML += "<h1>" + yearOfCalendar + "</h1>";
+
+	// 월Div 생성
+		for (var i = 1; i < 13; i++) {
+		    const newDiv = document.createElement('div');
+			calendar.appendChild(newDiv);
+			newDiv.id = "month-" + i;
+			newDiv.classList.add('month');
+
+		    const months = [
+				'January',
+				'February',
+				'March',
+				'April',
+				'May',
+				'June',
+				'July',
+				'August',
+				'September',
+				'October',
+				'November',
+				'December',
+			];
+
+		    newDiv.innerHTML = "<h2>" + i + " " + months[i-1] + "</h2>";
+
+		    makemonthContent(i)
+		    makeDatesBefore1(i);
+		    makeDates(i);
+		    colorSpecificDays(i);
+
+		}
+
+	// monthContent Div 생성
+		function makemonthContent(month) {
+		    const monthElement = document.getElementById("month-" + month);
+
+		    const newDiv = document.createElement('div');
+		    monthElement.appendChild(newDiv);
+
+			newDiv.id = "month-" + month + "_monthContent";
+			newDiv.classList.add('monthContent');
+		}
+
+	// 당월 1일 이전 날짜Div 생성
+		function makeDatesBefore1(month) {
+		    let dateBefore1 = new Date(yearOfCalendar, month - 1, 1).getDay();
+		    for (var i = 0; i < dateBefore1; i++) {
+				const monthContentElement = document.getElementById("month-" + month + "_monthContent");
+
+		        const newDiv = document.createElement("div");
+		        monthContentElement.appendChild(newDiv);
+
+		        newDiv.id = "-" + (i + 1) + "_dateBefore1";
+		        newDiv.classList.add('date');
+		        newDiv.classList.add('dateBefore');
+		        newDiv.innerHTML = "<h3>(" + (31 - i) + ")</h3>";
+		    }
+		}
+
+	// 날짜Div 생성
+		function makeDates(month) {
+		    let lastDateofMonth = new Date(yearOfCalendar, month, 0).getDate();
+		    const monthContentElement = document.getElementById("month-" + month + "_monthContent");
+
+		    for (var i = 0; i < lastDateofMonth; i++) {
+		        const newDiv = document.createElement('div');
+		        monthContentElement.appendChild(newDiv);
+		        newDiv.id = "month-" + month + "_Date-" + (i + 1);
+		        newDiv.classList.add('date');
+		        newDiv.innerHTML = "<h3>" + ( i + 1 ) + "</h3>";
+		    }
+		}
+
+	// 특정 요일 색상 바꾸기 버튼
+		const colorWeekendsBtn = document.getElementById("colorWeekends");
+		colorWeekendsBtn.style.backgroundColor = "black";
+		colorWeekendsBtn.style.color = "#dcdcdc";
+
+		colorWeekendsBtn.onclick = function() {
+		    if (colorWeekendsBtn.style.backgroundColor === "black") {
+		        colorWeekendsBtn.style.backgroundColor = "";
+		        colorWeekendsBtn.style.color = "";
+		        UnColorSpecificDays()
+		    } else {
+		        colorWeekendsBtn.style.backgroundColor = "black";
+		        colorWeekendsBtn.style.color = "#dcdcdc";
+		        for (var i = 1; i < 13; i++) {colorSpecificDays(i)}
+		    }
+		};
+
+		function colorSpecificDays(month){
+			const monthContentElement = document.getElementById("month-" + month + "_monthContent");
+			if (!monthContentElement) {
+			console.error(`Element with ID 'month-${month}_monthContent' not found.`);
+			return;
+			}
+
+			const dates = Array.from(monthContentElement.querySelectorAll('div'));
+
+			dates.forEach((date, index) => {
+				const dayOfWeek = index % 7;
+				if (dayOfWeek === 0) {
+					date.classList.add('sunday');
+				} else if (dayOfWeek === 6) {
+					date.classList.add('saturday');
+				}
+			});
+			colorChange()
+		}
+		function UnColorSpecificDays(month){
+			const monthContentElement = document.getElementById("month-" + month + "_monthContent");
+			
+			const sundayElements = document.querySelectorAll(".sunday");
+		    const saturdayElements = document.querySelectorAll(".saturday");
+
+			sundayElements.forEach((element) => {
+				element.style.color = 'black';
+			})
+			saturdayElements.forEach((element) => {
+				element.style.color = 'black';
+			})				
+		}
+
+/*페이지전환 시 페이드인아웃*/
+	let touchTimeout;
+    resetTouchTimeout();
+	document.getElementById('fadePage').classList.remove("fadeToWhite");
+	document.getElementById('fadePage').classList.add("fadeFromWhite");
+	document.addEventListener('mousemove', TouchEventHandler);
+
+
+	function TouchEventHandler() {
+	    resetTouchTimeout();
+	}
+
+	function resetTouchTimeout() {
+	    clearTimeout(touchTimeout);
+	    touchTimeout = setTimeout(movePageSplash, 30000);
+	}
+
+	
+	function movePageSplash() {
+		sessionStorage.removeItem('scrollPosition');
+		document.getElementById('fadePage').classList.remove("fadeFromWhite");
+		document.getElementById('fadePage').classList.add("fadeToWhite");
+		setTimeout(goSplash, 2000);
+	}
+
+	function goSplash() {
+	    sessionStorage.removeItem('scrollPosition'); // 저장된 위치 제거 (선택 사항)
+		location.replace('./index.html');
+	}
+
+// 페이지 전환 시 페이드아웃
+	function movePage(destination) {
+	    sessionStorage.setItem('scrollPosition', scrollPosition);
+
+		document.getElementById('fadePage').classList.remove("fadeFromWhite");
+		document.getElementById('fadePage').classList.add("fadeToWhite");
+		setTimeout(() => {
+		    location.href = destination;
+		}, 2000);
+	}
+
+
+</script>
+</body>
+</html>

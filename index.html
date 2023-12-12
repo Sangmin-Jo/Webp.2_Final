@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="google" content="notranslate">
+
+	<link href='https://fonts.googleapis.com/css?family=Cutive Mono' rel='stylesheet'>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Monofett&family=Noto+Sans+KR:wght@300;500;900&family=PT+Serif&family=Tangerine:wght@700&display=swap" rel="stylesheet">
+
+	<link rel="icon" href="img/favicon-16x16.png">
+	<title>New Year's Web-Print</title>
+	<style type="text/css">
+
+	@font-face {
+		font-family: 'Pretendard-Regular';
+		src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+		font-style: normal;
+	}	    
+
+	html{
+			font-family: 'Cutive Mono', monospace; font-weight: 700;
+			overflow: hidden;
+		}
+	body{
+		font-size: 20pt; 
+		text-align: center;
+		margin: 10vw;
+	}
+
+	#introduce{
+		font-family: pretendard;
+		font-size: 1rem;
+		line-height: 1.5rem;
+	}
+
+/*페이지전환 시 페이드인아웃*/
+	#fadePage{
+		background: white;
+		position: fixed; top: -5vh; left: -5vw;
+		width: 110vw; height: 110vh;
+		overflow: hidden;
+
+		z-index: 999;
+		pointer-events : none;
+		touch-action: none; }
+
+	
+	.fadeToWhite{
+		animation-name: toWhite;
+		animation-duration: 1.6s;
+		animation-timing-function: ease-in;
+		animation-fill-mode: forwards;
+	}
+
+	@keyframes toWhite{
+		0% {opacity: 0;}
+		100% {opacity: 1;}
+	}
+
+	.fadeFromWhite{
+		animation-name: fromWhite;
+		animation-duration: 1.6s;
+		animation-delay: 0.3s;
+		animation-timing-function: ease-out;
+		animation-fill-mode: forwards;
+	}
+
+	@keyframes fromWhite{
+		0% {opacity: 1;}
+		100% {opacity: 0;}
+	}
+
+	#PrinterImg {
+		position: fixed;
+		transform: translate(-50%, -50%);
+		top: 50%;
+		left: 50%;
+
+	    width: 50%;
+	    z-index: -1;
+	}
+
+	.zoom {
+		animation-name: zoom;
+		animation-duration: 4s;
+		animation-fill-mode: forwards;
+	}
+
+	@keyframes zoom {
+		0% {width: 50%;}
+		100% {width: 75%;}
+	}
+
+	</style>
+</head>
+<body>
+	<div id="fadePage" class="fadeFromWhite"></div>
+	<div id="introduce">
+		새해맞이 인쇄물을 만드는 웹 웹 인쇄소 ! <br><br>인쇄물들의 판형을 선택 / <br>선택한 판형에 따라 자동으로 조판이 완성되고, / <br>방문자는 몇 가지 조작으로 css를 커스터마이징할 수 있는 / <br>직접 인쇄할 수 있는 새해맞이 웹 인쇄소.
+	</div>
+	<img src="./img/printerImg.png" id="PrinterImg">
+	<br>Click To Enter
+	
+<script type="text/javascript">
+	const PrinterImg = document.getElementById('PrinterImg')
+
+	window.onmousemove = function(e){
+		const a = Math.floor(e.clientX / window.innerWidth * 360)
+		const b = Math.floor(e.clientY / window.innerHeight * 100)
+
+		PrinterImg.style.backgroundColor = "hsl(" + (e.clientX / window.innerWidth * 360) + "," + "100%," + (e.clientY / window.innerHeight * 100) + "%)"
+		console = "hsl(" + a + "," + "100%," + b + "%)"
+	}
+
+// 페이지 전환 시 페이드아웃
+	document.addEventListener('click', () => {
+		fadeToWhite()
+	});
+
+	function fadeToWhite() {
+		document.getElementById('fadePage').classList.remove("fadeFromWhite");
+		document.getElementById('fadePage').classList.add("fadeToWhite");
+		PrinterImg.classList.add('zoom')
+
+		setTimeout(movePage, 2000);
+	}
+
+	function movePage(){
+		var link = './main.html';
+		location.href=link;
+	}
+</script>
+
+</body>
+</html>
